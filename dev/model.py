@@ -1,3 +1,4 @@
+
 import duckdb
 import pandas as pd
 import numpy as np
@@ -25,7 +26,7 @@ def creation_model():
     con.close()
 
     logger.info("Transformation des données...")
-    user_movie_matrix = ratings_df.pivot(index="user_id", columns="film_id", values="rating").fillna(0)
+    user_movie_matrix = ratings_df.pivot(index="user_id", columns="film_id", values="rating")
 
     logger.info("Création du modèle...")
     svd = TruncatedSVD(n_components=2, random_state=42)
@@ -35,4 +36,3 @@ def creation_model():
     joblib.dump(svd, "model.pkl")
 
     return(0)
-

@@ -4,8 +4,37 @@ import numpy as np
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import duckdb
+from sklearn.decomposition import TruncatedSVD
+from sklearn.preprocessing import StandardScaler
+from loguru import logger
+import pandas as pd
+from model import creation_model
 
 DB_FILE = "movies_db.duckdb"
+
+def predict(userID, model, user_features):
+    """
+    Prédit les films à recommander pour un utilisateur donné.
+
+    Args:
+        userID (int): ID de l'utilisateur
+        model (TruncatedSVD): modèle de réduction de dimension
+        user_features (np.array): features des utilisateurs
+    Returns:
+        np.array: films recommandés
+    """
+    if 'model.pkl' not in os.listdir():
+        logger.info("Création du modèle...")
+        creation_model()
+
+    logger.info("Chargement du modèle...")
+    model = joblib.load("model.pkl")
+
+    logger.info("Calcul de la prédiction...")
+    predictions_scaled = np.dot(user_features[userID], model.components_)
+
+    return 
+
 
 class userID(BaseModel):
     userID: int
