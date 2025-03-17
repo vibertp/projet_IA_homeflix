@@ -17,7 +17,7 @@ def fetch_movie_data(movie_id):
     
     }
     
-    response = requests.get(url,headers)
+    response = requests.get(url,headers=headers)
     
     if response.status_code == 200:
         return response.json()
