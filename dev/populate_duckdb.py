@@ -2,6 +2,7 @@ import requests
 import duckdb
 import pandas as pd
 from time import sleep
+from loguru import logger
 
 # API_KEY = "8c0a1e57719313fec82c077243f8f31b"
 DB_FILE = "movies_db.duckdb"
@@ -22,7 +23,7 @@ def fetch_movie_data(movie_id):
     if response.status_code == 200:
         return response.json()
     else:
-        print(f"Erreur lors de la récupération du film ID {movie_id}: {response.status_code}")
+        logger.error(f"Erreur lors de la récupération du film ID {movie_id}: {response.status_code}")
         return None
 
 def create_tables():
@@ -54,6 +55,9 @@ def save_movie_to_db(movie_data):
     release_date = movie_data.get("release_date")
     if release_date == "" :
         release_date = None
+    genres = [g['name'] for g in movie_data['genres']]
+    if not genres:
+        genres = None
     conn = duckdb.connect(DB_FILE)
     conn.execute("""
         INSERT INTO films (id, title, description, genres, release_date,vote_average, vote_count)
@@ -62,7 +66,7 @@ def save_movie_to_db(movie_data):
         movie_data['id'],
         movie_data['title'],
         movie_data['overview'],
-        [g['name'] for g in movie_data['genres']],
+        genres,
         release_date,
         movie_data['vote_average'],
         movie_data['vote_count']
@@ -107,19 +111,21 @@ def main():
     # Récupérer les films uniques du fichier CSV
     unique_movie_ids = ratings_df['movieId'].unique()[:nmax]
     ratings_df = ratings_df[ratings_df["movieId"].isin(unique_movie_ids)]
+    logger.info("Début importation des notes")
     save_ratings_to_db(ratings_df)
-    print("Importation des notes terminée.")
-
+    logger.info("Importation des notes terminée.")
+    
+    logger.info("Début importation des films")
     for movie_id in unique_movie_ids:
         movie_data = fetch_movie_data(movie_id)
         
         if movie_data:
             save_movie_to_db(movie_data)
-            print(f"Film '{movie_data['title']}' ajouté avec succès.")
+            logger.info(f"Film '{movie_data['title']}' ajouté avec succès.")
         
         sleep(0.2)  # Pause pour éviter de dépasser le taux limite de l’API
 
-    print("Importation terminée.")
+    logger.info("Fin importation des films.")
 
 if __name__ == "__main__":
     main()
