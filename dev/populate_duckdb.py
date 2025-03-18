@@ -97,16 +97,18 @@ def save_ratings_to_db(ratings_df):
 
 
 def main():
+    nmax = 500
     # Créer les tables dans la base de données DuckDB
     create_tables()
 
     # Charger le fichier CSV
     ratings_df = pd.read_csv("data/ratings.csv")
+    
+    # Récupérer les films uniques du fichier CSV
+    unique_movie_ids = ratings_df['movieId'].unique()[:nmax]
+    ratings_df = ratings_df[ratings_df["movieId"].isin(unique_movie_ids)]
     save_ratings_to_db(ratings_df)
     print("Importation des notes terminée.")
-
-    # Récupérer les films uniques du fichier CSV
-    unique_movie_ids = ratings_df['movieId'].unique()
 
     for movie_id in unique_movie_ids:
         movie_data = fetch_movie_data(movie_id)
