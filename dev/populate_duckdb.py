@@ -3,7 +3,7 @@ import duckdb
 import pandas as pd
 from time import sleep
 
-API_KEY = "8c0a1e57719313fec82c077243f8f31b"
+# API_KEY = "8c0a1e57719313fec82c077243f8f31b"
 DB_FILE = "movies_db.duckdb"
 
 def fetch_movie_data(movie_id):
@@ -17,7 +17,7 @@ def fetch_movie_data(movie_id):
     
     }
     
-    response = requests.get(url,headers)
+    response = requests.get(url,headers=headers)
     
     if response.status_code == 200:
         return response.json()
@@ -29,7 +29,7 @@ def create_tables():
     """Crée les tables dans DuckDB si elles n'existent pas."""
     conn = duckdb.connect(DB_FILE)
     conn.execute("""
-        CREATE TABLE IF NOT EXISTS movies (
+        CREATE or REPLACE TABLE films (
             id INT PRIMARY KEY,
             title TEXT,
             description TEXT,
@@ -40,7 +40,7 @@ def create_tables():
         );
     """)
     conn.execute("""
-        CREATE TABLE IF NOT EXISTS ratings (
+        CREATE OR REPLACE TABLE ratings (
                 user_id INT,
                 film_id INT,
                 rating FLOAT,
@@ -51,16 +51,19 @@ def create_tables():
 
 def save_movie_to_db(movie_data):
     """Enregistre les données d'un film dans DuckDB."""
+    release_date = movie_data.get("release_date")
+    if release_date == "" :
+        release_date = None
     conn = duckdb.connect(DB_FILE)
     conn.execute("""
-        INSERT INTO movies (id, title, description, genre, release_date,vote_average, vote_count)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO films (id, title, description, genres, release_date,vote_average, vote_count)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     """, (
         movie_data['id'],
         movie_data['title'],
         movie_data['overview'],
-        movie_data['genres'],
-        movie_data['release_date'],
+        [g['name'] for g in movie_data['genres']],
+        release_date,
         movie_data['vote_average'],
         movie_data['vote_count']
     ))
