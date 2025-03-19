@@ -5,7 +5,7 @@ from time import sleep
 from loguru import logger
 
 # API_KEY = "8c0a1e57719313fec82c077243f8f31b"
-DB_FILE = "movies_db.duckdb"
+DB_FILE = "data/movies_db.duckdb"
 
 def fetch_movie_data(movie_id):
     """Récupère les informations d'un film via l’API TMDB."""

@@ -1,4 +1,3 @@
-
 import duckdb
 import pandas as pd
 import numpy as np
@@ -16,7 +15,7 @@ def creation_model():
 
     logger.info("Connexion à la base DuckDB et chargement des données...")
 
-    DB_FILE = "movies_db.duckdb"
+    DB_FILE = "data/movies_db.duckdb"
 
     con = duckdb.connect("movies_db.duckdb")
 
@@ -26,11 +25,11 @@ def creation_model():
     con.close()
 
     logger.info("Transformation des données...")
-    user_movie_matrix = ratings_df.pivot(index="user_id", columns="film_id", values="rating")
+    user_movie_matrix = ratings_df.pivot(index="user_id", columns="film_id", values="rating").fillna(0)
 
     logger.info("Création du modèle...")
     svd = TruncatedSVD(n_components=2, random_state=42)
-    user_features = svd.fit_transform(user_movie_matrix)
+    user_features = svd.fit(user_movie_matrix)
 
     logger.info("Enregistrement du modèle...")
     joblib.dump(svd, "model.pkl")

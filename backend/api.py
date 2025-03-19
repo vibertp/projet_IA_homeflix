@@ -10,7 +10,7 @@ from loguru import logger
 import pandas as pd
 from model import creation_model
 
-DB_FILE = "movies_db.duckdb"
+DB_FILE = "data/movies_db.duckdb"
 
 def predict(userID, model, user_features):
     """
@@ -36,10 +36,20 @@ def predict(userID, model, user_features):
     return 
 
 
+def tendances():
+    """
+    Récupère les films les plus populaires.
+    """
+    con = duckdb.connect(DB_FILE)
+    movies = con.execute("SELECT TOP 3 id, title FROM movies SORT BY vote_count DESC  ").df()
+
+    return
+
+
 class userID(BaseModel):
     userID: int
 
-con = duckdb.connect("movies_db.duckdb")
+con = duckdb.connect(DB_FILE)
 
 movies = con.execute("SELECT id, title FROM movies").df()
 ratings = con.execute("SELECT user_id, film_id, rating FROM ratings").df()
@@ -51,6 +61,11 @@ app = FastAPI()
 @app.get("/")
 def read_root():
     return {"message": "Bienvenue sur l'API Homeflix pour la recommandation de films"}
+
+@app.get("/popular_movies")
+def popular_movies():
+    
+    return tendances()
 
 
 @app.get("/movies_seen")
