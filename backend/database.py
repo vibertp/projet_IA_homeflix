@@ -5,7 +5,7 @@ from loguru import logger
 from time import sleep
 import utils.config as config
 
-def fetch_movie_data(movie_id):
+def fetch_movie_data(movie_id:int) -> dict:
     """
     Récupère les informations d'un film via l’API TMDB.
     
@@ -32,7 +32,7 @@ def fetch_movie_data(movie_id):
         logger.error(f"Erreur lors de la récupération du film ID {movie_id}: {response.status_code}")
         return None
 
-def create_tables():
+def create_tables() -> None:
     """
     Crée les tables dans DuckDB ou les écrase si elle existe déjà.
     """
@@ -58,7 +58,7 @@ def create_tables():
     """)
     conn.close()
 
-def save_movie_to_db(movie_data):
+def save_movie_to_db(movie_data:dict) -> None:
     """
     Enregistre les données d'un film dans DuckDB.
     
@@ -87,9 +87,9 @@ def save_movie_to_db(movie_data):
     conn.close()
 
 
-def save_ratings_to_db(ratings_df):
+def save_ratings_to_db(ratings_df:pd.DataFrame) -> None:
     """
-    Enregistre les notes du fichier CSV dans DuckDB.
+    Enregistre les notes de ratings dans DuckDB.
     
     Args:
         ratings_df(pd.DataFrame)
@@ -115,7 +115,7 @@ def save_ratings_to_db(ratings_df):
     
     conn.close()
     
-def unique_movie_id_in_ratings(nmax,df):
+def unique_movie_id_in_ratings(nmax: int,df: pd.DataFrame) -> tuple:
     """Génère la liste des nmax premiers id de films uniques présents dans df.
 
     Args:
@@ -132,7 +132,7 @@ def unique_movie_id_in_ratings(nmax,df):
     
     
 
-def import_movie_to_db(ids_unique):
+def import_movie_to_db(ids_unique:list) -> None:
     """Cherche les informations des films sur TDBM et enregistre les informations dans la base de données duckDB.
 
     Args:
@@ -147,7 +147,7 @@ def import_movie_to_db(ids_unique):
         
         sleep(0.2)  # Pause pour éviter de dépasser le taux limite de l’API
 
-def supp_lignes_inutiles():
+def supp_lignes_inutiles() -> None:
     """
     Supprime les lignes de la table ratings, dans la base de données, qui correspondent aux id de films inconnus pour TDBM.
     """
