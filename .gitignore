@@ -1,2 +1,5 @@
 ./monenv
-test.ipynb
+.venv/
+__pycache__/
+*.log
+.ipynb
