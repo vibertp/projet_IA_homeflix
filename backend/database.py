@@ -6,7 +6,15 @@ from time import sleep
 import utils.config as config
 
 def fetch_movie_data(movie_id):
-    """Récupère les informations d'un film via l’API TMDB."""
+    """
+    Récupère les informations d'un film via l’API TMDB.
+    
+    Args:
+        movie_id (int) : identifiant du film 
+    
+    Return:
+        .json ou None : information du film en fichier .json ou None si l'id ne correspond à aucun film.
+    """
     url = f"https://api.themoviedb.org/3/movie/{movie_id}?language=en-US"
     
     
@@ -25,7 +33,9 @@ def fetch_movie_data(movie_id):
         return None
 
 def create_tables():
-    """Crée les tables dans DuckDB si elles n'existent pas."""
+    """
+    Crée les tables dans DuckDB ou les écrase si elle existe déjà.
+    """
     conn = duckdb.connect(config.DB_FILE)
     conn.execute("""
         CREATE or REPLACE TABLE films (
@@ -49,7 +59,12 @@ def create_tables():
     conn.close()
 
 def save_movie_to_db(movie_data):
-    """Enregistre les données d'un film dans DuckDB."""
+    """
+    Enregistre les données d'un film dans DuckDB.
+    
+    Args:
+        movie_data (dict) : dictionnaire contenant toutes les informations du film.
+    """
     release_date = movie_data.get("release_date")
     if release_date == "" :
         release_date = None
@@ -71,10 +86,14 @@ def save_movie_to_db(movie_data):
     ))
     conn.close()
 
-import duckdb
 
 def save_ratings_to_db(ratings_df):
-    """Enregistre les notes du fichier CSV dans DuckDB."""
+    """
+    Enregistre les notes du fichier CSV dans DuckDB.
+    
+    Args:
+        ratings_df(pd.DataFrame)
+    """
     conn = duckdb.connect(config.DB_FILE)
     
     # Créer la table 'ratings' si elle n'existe pas déjà
@@ -97,6 +116,16 @@ def save_ratings_to_db(ratings_df):
     conn.close()
     
 def unique_movie_id_in_ratings(nmax,df):
+    """Génère la liste des nmax premiers id de films uniques présents dans df.
+
+    Args:
+        nmax (int): nombre d'id max à prendre 
+        df (pd.DataFrame): dataframe qui contient des id de films
+
+    Returns:
+        pd.DataFrame, np.array: retourne la liste des nmax identifiants uniques de films ainsi que 
+        le dataframe filtrer sur ces id.
+    """
     unique_movie_ids = df['movieId'].unique()[:nmax]
     df = df[df["movieId"].isin(unique_movie_ids)]
     return df, unique_movie_ids
@@ -104,6 +133,11 @@ def unique_movie_id_in_ratings(nmax,df):
     
 
 def import_movie_to_db(ids_unique):
+    """Cherche les informations des films sur TDBM et enregistre les informations dans la base de données duckDB.
+
+    Args:
+        ids_unique (list): ids uniques des films à chercher.
+    """
     for movie_id in ids_unique:
         movie_data = fetch_movie_data(movie_id)
         
@@ -114,6 +148,9 @@ def import_movie_to_db(ids_unique):
         sleep(0.2)  # Pause pour éviter de dépasser le taux limite de l’API
 
 def supp_lignes_inutiles():
+    """
+    Supprime les lignes de la table ratings, dans la base de données, qui correspondent aux id de films inconnus pour TDBM.
+    """
     conn = duckdb.connect(config.DB_FILE)
     conn.execute("""
                  DELETE 
