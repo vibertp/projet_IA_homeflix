@@ -5,6 +5,7 @@ from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import StandardScaler
 from loguru import logger
 import joblib
+from utils.config import DB_FILE
 
 
 def creation_model():
@@ -15,9 +16,7 @@ def creation_model():
 
     logger.info("Connexion à la base DuckDB et chargement des données...")
 
-    DB_FILE = "data/movies_db.duckdb"
-
-    con = duckdb.connect("movies_db.duckdb")
+    con = duckdb.connect(DB_FILE)
 
     ratings_df = con.execute("SELECT user_id, film_id, rating FROM ratings").df()
 
@@ -28,10 +27,14 @@ def creation_model():
     user_movie_matrix = ratings_df.pivot(index="user_id", columns="film_id", values="rating").fillna(0)
 
     logger.info("Création du modèle...")
-    svd = TruncatedSVD(n_components=2, random_state=42)
-    user_features = svd.fit(user_movie_matrix)
+    svd = TruncatedSVD(n_components=50, random_state=42)
+    user_film_svd = svd.fit_transform(user_movie_matrix)
 
     logger.info("Enregistrement du modèle...")
-    joblib.dump(svd, "model.pkl")
-
+    try :
+        joblib.dump(svd, 'svd_model.joblib')
+        joblib.dump(user_film_svd, 'user_film_svd.joblib')
+        logger.info("Modèle enregistré avec succès.")
+    except Exception as e:
+        logger.error(f"Erreur lors de l'enregistrement du modèle: {e}")
     return(0)
