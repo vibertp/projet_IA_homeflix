@@ -9,51 +9,29 @@ from sklearn.preprocessing import StandardScaler
 from loguru import logger
 import pandas as pd
 from model import creation_model
-
-DB_FILE = "data/movies_db.duckdb"
-
-def predict(userID, model, user_features):
-    """
-    Prédit les films à recommander pour un utilisateur donné.
-
-    Args:
-        userID (int): ID de l'utilisateur
-        model (TruncatedSVD): modèle de réduction de dimension
-        user_features (np.array): features des utilisateurs
-    Returns:
-        np.array: films recommandés
-    """
-    if 'model.pkl' not in os.listdir():
-        logger.info("Création du modèle...")
-        creation_model()
-
-    logger.info("Chargement du modèle...")
-    model = joblib.load("model.pkl")
-
-    logger.info("Calcul de la prédiction...")
-    predictions_scaled = np.dot(user_features[userID], model.components_)
-
-    return 
+from utils.config import DB_FILE
+from predict import prediction
 
 
-def tendances():
-    """
-    Récupère les films les plus populaires.
-    """
+#On recupère les données
+logger.info("Chargement des données...")
+try:
     con = duckdb.connect(DB_FILE)
-    movies = con.execute("SELECT TOP 3 id, title FROM movies SORT BY vote_count DESC  ").df()
+    ratings = con.execute("SELECT user_id, film_id, rating FROM ratings").df()
+    logger.info("Données chargés")
+except :
+    logger.error('Erreur de chargement des données')
 
-    return
-
+#On crée le modèle
+logger.info("Création du modèle...")
+try : 
+    creation_model()
+    logger.info("Modèle créé avec succès")
+except:
+    logger.error('Erreur de création du modèle')
 
 class userID(BaseModel):
     userID: int
-
-con = duckdb.connect(DB_FILE)
-
-movies = con.execute("SELECT id, title FROM movies").df()
-ratings = con.execute("SELECT user_id, film_id, rating FROM ratings").df()
-model = joblib.load("model.pkl")
 
 
 app = FastAPI()
@@ -65,7 +43,7 @@ def read_root():
 @app.get("/popular_movies")
 def popular_movies():
     
-    return tendances()
+    return tendances
 
 
 @app.get("/movies_seen")
@@ -78,3 +56,5 @@ def read_item(userID: int):
 def recommendation(userID: int):
     if userID not in ratings["user_id"].unique():
         raise HTTPException(status_code=404, detail="Cet utilisateur n'existe pas")
+    else:
+        raise prediction(userID)
