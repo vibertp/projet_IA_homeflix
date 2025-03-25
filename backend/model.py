@@ -12,8 +12,6 @@ def creation_model():
     """
     Crée un modèle de recommandation de films.
     """
-    logger.add("debug.log", rotation="500 MB", level="DEBUG")
-
     logger.info("Connexion à la base DuckDB et chargement des données...")
 
     con = duckdb.connect(config.DB_FILE)
@@ -32,8 +30,8 @@ def creation_model():
 
     logger.info("Enregistrement du modèle...")
     try :
-        joblib.dump(svd, 'svd_model.joblib')
-        joblib.dump(user_film_svd, 'user_film_svd.joblib')
+        joblib.dump(svd, 'model/svd_model.joblib')
+        joblib.dump(user_film_svd, 'model/user_film_svd.joblib')
         logger.info("Modèle enregistré avec succès.")
     except Exception as e:
         logger.error(f"Erreur lors de l'enregistrement du modèle: {e}")
