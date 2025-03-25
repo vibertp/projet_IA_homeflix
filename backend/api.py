@@ -8,15 +8,15 @@ from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import StandardScaler
 from loguru import logger
 import pandas as pd
-from model import creation_model
-from utils.config import DB_FILE
+from backend.model import creation_model
+import utils.config as config
 from predict import prediction
 
 
 #On recupère les données
 logger.info("Chargement des données...")
 try:
-    con = duckdb.connect(DB_FILE)
+    con = duckdb.connect(config.DB_FILE)
     ratings = con.execute("SELECT user_id, film_id, rating FROM ratings").df()
     logger.info("Données chargés")
 except :

@@ -5,7 +5,7 @@ from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import StandardScaler
 from loguru import logger
 import joblib
-from utils.config import DB_FILE
+import utils.config as config
 
 
 def creation_model():
@@ -16,7 +16,7 @@ def creation_model():
 
     logger.info("Connexion à la base DuckDB et chargement des données...")
 
-    con = duckdb.connect(DB_FILE)
+    con = duckdb.connect(config.DB_FILE)
 
     ratings_df = con.execute("SELECT user_id, film_id, rating FROM ratings").df()
 
