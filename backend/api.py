@@ -16,6 +16,7 @@ import utils.config as config
 from backend.predict import prediction
 from backend.movies_seen import seen_movies
 from backend.tendances import tendance
+from backend.info_film import movie_info
 
 
 #On recupère les données
@@ -23,6 +24,7 @@ logger.info("Chargement des données...")
 try:
     con = duckdb.connect(config.DB_FILE)
     ratings = con.execute("SELECT user_id, film_id, rating FROM ratings").df()
+    films = con.execute("SELECT id FROM films").df()
     logger.info("Données chargés")
 except :
     logger.error('Erreur de chargement des données')
@@ -38,6 +40,8 @@ except:
 class userID(BaseModel):
     userID: int
 
+class filmID(BaseModel):
+    filmID: int
 
 app = FastAPI()
 
@@ -49,10 +53,16 @@ def read_root():
 def popular_movies():
     return tendance()
 
+@app.get("/movie")
+def popular_movies(filmID: int):
+    if filmID not in films["id"].unique():
+        raise HTTPException(status_code=404, detail="Ce film n'existe pas")
+    else:
+        return movie_info(filmID)
 
 @app.get("/movies_seen")
 def read_item(userID: int):
-    if userID not in range(1, 611):
+    if userID not in ratings["user_id"].unique():
         raise HTTPException(status_code=404, detail="Cet utilisateur n'existe pas")
     else:
         return seen_movies(userID)
