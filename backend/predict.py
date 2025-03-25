@@ -17,7 +17,7 @@ def prediction(user_id, n=3):
     logger.info("Chargement des données...")
     con = duckdb.connect(config.DB_FILE)
     ratings_df = con.execute("SELECT user_id, film_id, rating FROM ratings").df()
-    film_df = con.execute("SELECT id, title FROM films").df()
+    film_df = con.execute("SELECT id, title, description, release_date FROM films").df()
     con.close()
     user_film_matrix = ratings_df.pivot(index='user_id', columns='film_id', values='rating').fillna(0)
 
@@ -51,6 +51,8 @@ def prediction(user_id, n=3):
             "id": int(film_id),
             "title": title,
             "rating_predicted": float(user_predictions[film_id])
+            "description": film_df.loc[film_df['id'] == film_id, 'description'].values[0],
+            "release_date": film_df.loc[film_df['id'] == film_id, 'release_date'].values[0]
         })
 
     return {

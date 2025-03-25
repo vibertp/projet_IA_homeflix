@@ -25,6 +25,7 @@ try:
     con = duckdb.connect(config.DB_FILE)
     ratings = con.execute("SELECT user_id, film_id, rating FROM ratings").df()
     films = con.execute("SELECT id FROM films").df()
+    con.close()
     logger.info("Données chargés")
 except :
     logger.error('Erreur de chargement des données')
