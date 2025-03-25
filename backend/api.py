@@ -15,6 +15,7 @@ from backend.model import creation_model
 import utils.config as config
 from backend.predict import prediction
 from backend.movies_seen import seen_movies
+from backend.tendances import tendance
 
 
 #On recupère les données
@@ -46,8 +47,7 @@ def read_root():
 
 @app.get("/popular_movies")
 def popular_movies():
-    
-    return tendances
+    return tendance()
 
 
 @app.get("/movies_seen")

@@ -6,9 +6,7 @@ import duckdb
 from sklearn.decomposition import TruncatedSVD
 from loguru import logger
 import pandas as pd
-from backend.model import creation_model
 import utils.config as config
-from backend.predict import prediction
 
 def seen_movies(userID):
     """
@@ -24,6 +22,7 @@ def seen_movies(userID):
     except Exception as e:
         logger.error(f"Erreur de chargement des données: {e}")
     
+    logger.info("Calcul des films déjà vus")
     film_id_seen = ratings[ratings['user_id'] == userID][['film_id', 'rating']]
 
     list_films = []
@@ -37,5 +36,5 @@ def seen_movies(userID):
 
     return {
         "user_id": int(userID),
-        "recommendations": list_films
+        "movies_seen": list_films
     }
