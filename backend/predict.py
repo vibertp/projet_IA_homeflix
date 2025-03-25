@@ -3,21 +3,21 @@ import pandas as pd
 import numpy as np
 from loguru import logger
 import joblib
-from utils.config import DB_FILE
+import utils.config as config
 
 def prediction(user_id, n=3):
     logger.info("Chargement du modèle...")
     try :
-        svd = joblib.load('svd_model.joblib')
-        user_film_svd = joblib.load('user_film_svd.joblib')
+        svd = joblib.load('model/svd_model.joblib')
+        user_film_svd = joblib.load('model/user_film_svd.joblib')
         logger.info("Modèle chargé avec succès.")
     except Exception as e:
         logger.error(f"Erreur lors du chargement du modèle: {e}")
 
     logger.info("Chargement des données...")
-    con = duckdb.connect(DB_FILE)
+    con = duckdb.connect(config.DB_FILE)
     ratings_df = con.execute("SELECT user_id, film_id, rating FROM ratings").df()
-    film_df = con.execute("SELECT film_id, title FROM movies").df()
+    film_df = con.execute("SELECT id, title FROM films").df()
     con.close()
     user_film_matrix = ratings_df.pivot(index='user_id', columns='film_id', values='rating').fillna(0)
 
@@ -46,14 +46,14 @@ def prediction(user_id, n=3):
     # Obtenir les détails des films recommandés
     recommendations_details = []
     for film_id in top_recommendations:
-        title = film_df.loc[film_df['film_id'] == film_id, 'title'].values[0]
+        title = film_df.loc[film_df['id'] == film_id, 'title'].values[0]
         recommendations_details.append({
-            "id": film_id,
+            "id": int(film_id),
             "title": title,
-            "rating_predicted": user_predictions[film_id]
+            "rating_predicted": float(user_predictions[film_id])
         })
 
     return {
-        "user_id": user_id,
+        "user_id": int(user_id),
         "recommendations": recommendations_details
     }

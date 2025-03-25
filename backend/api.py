@@ -1,16 +1,20 @@
+import sys
 import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+
 import joblib
 import numpy as np
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import duckdb
-from sklearn.decomposition import TruncatedSVD
-from sklearn.preprocessing import StandardScaler
 from loguru import logger
 import pandas as pd
 from backend.model import creation_model
 import utils.config as config
-from predict import prediction
+from backend.predict import prediction
+from backend.movies_seen import seen_movies
 
 
 #On recupère les données
@@ -50,11 +54,12 @@ def popular_movies():
 def read_item(userID: int):
     if userID not in range(1, 611):
         raise HTTPException(status_code=404, detail="Cet utilisateur n'existe pas")
-    return {"userID": userID}
+    else:
+        return seen_movies(userID)
 
 @app.get("/recommend_movies")
 def recommendation(userID: int):
     if userID not in ratings["user_id"].unique():
         raise HTTPException(status_code=404, detail="Cet utilisateur n'existe pas")
     else:
-        raise prediction(userID)
+        return prediction(userID)
