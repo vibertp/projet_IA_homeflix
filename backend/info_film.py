@@ -3,7 +3,6 @@ import numpy as np
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import duckdb
-from sklearn.decomposition import TruncatedSVD
 from loguru import logger
 import pandas as pd
 import utils.config as config
@@ -24,4 +23,4 @@ def movie_info(filmID: int):
     
     movie = films[films['id'] == filmID]
 
-    return(movie.to_dict(orient="records"))
+    return(movie.to_dict(orient="records")[0])
