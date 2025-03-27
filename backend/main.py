@@ -1,9 +1,5 @@
 import sys
 import os
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-
 import joblib
 import numpy as np
 from fastapi import FastAPI, HTTPException
@@ -11,12 +7,12 @@ from pydantic import BaseModel
 import duckdb
 from loguru import logger
 import pandas as pd
-from backend.model import creation_model
+from model import creation_model
 import utils.config as config
-from backend.predict import prediction
-from backend.movies_seen import seen_movies
-from backend.tendances import tendance
-from backend.info_film import movie_info
+from predict import prediction
+from movies_seen import seen_movies
+from tendances import tendance
+from info_film import movie_info
 
 
 #On recupère les données

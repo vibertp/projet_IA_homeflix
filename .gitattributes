@@ -1,2 +1,4 @@
 data/ratings.csv filter=lfs diff=lfs merge=lfs -text
 movies_db.duckdb filter=lfs diff=lfs merge=lfs -text
+database/data/ratings.csv filter=lfs diff=lfs merge=lfs -text
+database/data/movies-ratings.duckdb filter=lfs diff=lfs merge=lfs -text

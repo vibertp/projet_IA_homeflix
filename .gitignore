@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 ./monenv
 .venv/
 __pycache__/
 *.log
 *.ipynb
+=======
+monenv/
+test.ipynb
+>>>>>>> e3de9a2 (Ancien projet)

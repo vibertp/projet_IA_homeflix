@@ -1,10 +1,8 @@
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 import streamlit as st
-import frontend.recommendation as recommendation
-import frontend.popular_info as popular_info
+import recommendation as recommendation
+import popular_info as popular_info
 
 # Titre de l'application principale
 st.set_page_config(page_title="Mon Application de Films", page_icon="🎬")

@@ -1,6 +1,6 @@
 from loguru import logger 
 import pandas as pd
-from backend.database import fetch_movie_data, create_tables, save_movie_to_db, save_ratings_to_db,unique_movie_id_in_ratings, import_movie_to_db, supp_lignes_inutiles
+from database.database import fetch_movie_data, create_tables, save_movie_to_db, save_ratings_to_db,unique_movie_id_in_ratings, import_movie_to_db, supp_lignes_inutiles
 import utils.config as config
 
 def main():
