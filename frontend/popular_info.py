@@ -25,7 +25,12 @@ def show():
         if popular_movies:
             # Afficher les films populaires
             for movie in popular_movies:
-                st.write(f"📽️ **{movie['title']}** ")
+                response = requests.get(f"{API_URL}/movie", params={"filmID": movie['id']}) 
+
+                if response.status_code == 200:
+                    film_details = response.json()
+                    st.write(f"📽️ **{movie['title']}** ")
+                    st.write(f"**Description :** {film_details['description']}")
         else:
             st.write("Aucun film populaire trouvé.")
     else:
