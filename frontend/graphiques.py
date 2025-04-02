@@ -6,6 +6,8 @@ import plotly.graph_objects as go
 import sys
 import os 
 from loguru import logger 
+import re
+import numpy as np
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from frontend.data_loader import load_data
@@ -38,11 +40,25 @@ fig2 = px.histogram(df_film, x='year', title="Évolution du nombre de films par 
 fig2.update_layout(xaxis_title='Année', yaxis_title='Nombre de films')
 st.plotly_chart(fig2)
 
-# # Section 3 : Évolution du nombre de films par genre
-# st.subheader("3. Évolution du nombre de films par genre")
-# fig3 = px.histogram(df, x='year', color='genre', title="Évolution du nombre de films par genre")
-# fig3.update_layout(xaxis_title='Année', yaxis_title='Nombre de films')
-# st.plotly_chart(fig3)
+# Section 3 : Évolution du nombre de films par genre
+st.subheader("3. Évolution du nombre de films par genre")
+df_sans_na = df_film.dropna()
+lists = [re.findall(r'\w+', item) for item in df_sans_na["genres"].unique()]
+ls_genres_unique = []
+for genres in lists: 
+    for g in genres:
+        if g not in ls_genres_unique:
+            ls_genres_unique.append(g)
+list_all_genres = [re.findall(r'\w+', item) for item in df_sans_na["genres"]]
+ls_genres_unique.sort()
+nb_films_par_genre = np.zeros(len(ls_genres_unique))
+for i in range(len(ls_genres_unique)):
+    for genres_film in list_all_genres:
+        if ls_genres_unique[i] in genres_film : 
+            nb_films_par_genre[i] += 1
+fig3 = px.bar(x=ls_genres_unique, y=nb_films_par_genre, title="Évolution du nombre de films par genre")
+fig3.update_layout(xaxis_title='Genres', yaxis_title='Nombre de films')
+st.plotly_chart(fig3)
 
 # # Section 4 : Top films (par votes)
 # st.subheader("4. Top films par nombre de votes")
