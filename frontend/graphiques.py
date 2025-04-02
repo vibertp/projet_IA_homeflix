@@ -56,25 +56,35 @@ for i in range(len(ls_genres_unique)):
     for genres_film in list_all_genres:
         if ls_genres_unique[i] in genres_film : 
             nb_films_par_genre[i] += 1
-fig3 = px.bar(x=ls_genres_unique, y=nb_films_par_genre, title="Évolution du nombre de films par genre")
+fig3 = px.bar(x=ls_genres_unique, y=nb_films_par_genre, title="Évolution du nombre de films par genre",
+              labels={'x':'Genre','y':'Nombre de films'})
 fig3.update_layout(xaxis_title='Genres', yaxis_title='Nombre de films')
 st.plotly_chart(fig3)
 
-# # Section 4 : Top films (par votes)
-# st.subheader("4. Top films par nombre de votes")
-# top_films = df.sort_values(by='votes', ascending=False).head(10)
-# fig4 = px.bar(top_films, x='film_title', y='votes', title="Top films par nombre de votes", 
-#               labels={'film_title': 'Film', 'votes': 'Nombre de votes'})
-# fig4.update_layout(xaxis_title='Film', yaxis_title='Nombre de votes')
-# st.plotly_chart(fig4)
+# Section 4 : Top films (par votes)
+st.subheader("4. Top 10 des films")
+top_films = df_film.sort_values(by='vote_average', ascending=False).head(10)
+fig4 = px.bar(top_films, x='title', y='vote_average', title="Top 10 des films", 
+              labels={'title': 'Film', 'vote_average': 'Moyenne des votes'})
+fig4.update_layout(xaxis_title='Film', yaxis_title='Moyenne des votes')
+st.plotly_chart(fig4)
 
-# # Section 5 : Top films par genre
-# st.subheader("5. Top films par genre")
-# top_films_genre = df.groupby('genre').apply(lambda x: x.nlargest(3, 'votes')).reset_index(drop=True)
-# fig5 = px.bar(top_films_genre, x='film_title', y='votes', color='genre', 
-#               title="Top films par genre", labels={'film_title': 'Film', 'votes': 'Nombre de votes'})
-# fig5.update_layout(xaxis_title='Film', yaxis_title='Nombre de votes')
-# st.plotly_chart(fig5)
+# Section 5 : Top films par genre
+st.subheader("5. Top 1 des films par genre")
+ls_film_title = []
+ls_vote = []
+df_sans_na_values = df_sans_na.values
+for unique_genre in ls_genres_unique:
+    print(unique_genre)
+    imax = 0
+    for i in range(len(list_all_genres)):
+        if (unique_genre in list_all_genres[i]) and (df_sans_na_values[i,5] >= df_sans_na_values[imax,5]):
+            imax = i
+    print(imax)
+    ls_film_title.append(df_sans_na_values[imax,1])
+    ls_vote.append(df_sans_na_values[imax,5])
+df_top_film_par_genre = pd.DataFrame({'Genre':ls_genres_unique,'TOP film':ls_film_title, 'Moyenne des votes':ls_vote}).set_index('Genre')
+df_top_film_par_genre
 
 # # Section 6 : Top films par année
 # st.subheader("6. Top films par année")
