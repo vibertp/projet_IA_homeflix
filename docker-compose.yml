@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend  
+    ports:
+      - "8000:8000"  
+    networks:
+      - flix_network
+    volumes:
+      - ./data:/data  
+
+  frontend:
+    build:
+      context: ./frontend  
+    ports:
+      - "8501:8501"  
+    networks:
+      - flix_network
+    depends_on:
+      - backend  
+    volumes:
+      - ./data:/data  
+
+  database:
+    image: duckdb/duckdb:latest  
+    networks:
+      - flix_network
+    volumes:
+      - ./data/movies-ratings.duckdb:/data/movies-ratings.duckdb 
+
+networks:
+  flix_network:
+    driver: bridge
