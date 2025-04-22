@@ -18,8 +18,11 @@ Pour lancer l'application en local, il faut dans un premier temps lancer l'API a
 uvicorn backend.api:app --relaod
 ```
 
-Le lancement de l'API permet aussi de créer le modèle
+Le lancement de l'API permet aussi de créer le modèle.
+
 Après avoir lancé l'API, on peut lancer l'application Streamlit avec la commande suivante :
 ```sh
 streamlit run ./frontend/home.py
  ```
+
+Nous avons donc fait tout le projet, il ne reste plus qu'a build le container.
