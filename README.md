@@ -2,14 +2,14 @@
 
 ## Description :
 
-Ce projet avait comme but de nous faire manipuler toutes les notions que nous avons abordé durant l'UE d'informatique avancé.
+Ce projet avait comme but de nous faire manipuler toutes les notions que nous avons abordé durant l'UE d'informatique avancée.
 Pour cela, nous avions comme consigne de faire une application Streamlit pour permettre de faire des recommendations de films. 
-Pour cela, nous avons utilisés les technologie suivantes : 
+Pour cela, nous avons utilisé les technologies suivantes : 
 - Création et manipulation de base de données SQL
 - Création et manipulation d'un modèle
 - Création et manipulation d'une API 
-- Création d'une application Streamlit pour réstiuter le resultat
-- Création d'un image Docker
+- Création d'une application Streamlit pour restituer le resultat
+- Création d'une image Docker
 
 ## Mise en route de l'application en local :
 
@@ -25,4 +25,4 @@ Après avoir lancé l'API, on peut lancer l'application Streamlit avec la comman
 streamlit run ./frontend/home.py
  ```
 
-Nous avons donc fait tout le projet, il ne reste plus qu'a build le container.
+Nous avons donc fait tout le projet, il ne reste plus qu'à build le container.
