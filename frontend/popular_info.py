@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import sys
+import numpy as np
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -57,8 +58,8 @@ def show():
             for genre in film_details['genres'].strip("[]").split(", "):
                 st.markdown(f"- {genre}")
             
-            st.write(f"**Date de sortie :** {film_details['release_date']}")
-            st.write(f"**Note moyenne :** {film_details['vote_average']}")
+            st.write(f"**Date de sortie :** {film_details['release_date'].split('T')[0]}")
+            st.write(f"**Note moyenne :** {np.round(film_details['vote_average'], 2)}")
             # Ajouter plus d'informations ici selon ce que l'API renvoie
         else:
             st.error("⚠️ Film non trouvé.")
